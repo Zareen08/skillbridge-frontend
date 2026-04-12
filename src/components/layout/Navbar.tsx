@@ -11,32 +11,19 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   
-  // Only try to use auth after component is mounted on client
-  let user = null;
-  let logout = () => {};
-  
+  const { user, logout } = useAuth();
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Safely access auth context
-  let auth;
-  try {
-    auth = useAuth();
-    user = auth.user;
-    logout = auth.logout;
-  } catch (error) {
-    // Auth not available yet
-    console.log('Auth not ready');
-  }
-
   const getDashboardLink = () => {
-    if (!user) return '/login';
+    if (!user) return '/auth/login';
     switch (user.role) {
       case 'STUDENT': return '/student/dashboard';
       case 'TUTOR': return '/tutor/dashboard';
       case 'ADMIN': return '/admin/dashboard';
-      default: return '/login';
+      default: return '/auth/login';
     }
   };
 
@@ -105,13 +92,13 @@ export default function Navbar() {
             ) : (
               <div className="flex space-x-4">
                 <Link
-                  href="/login"
+                  href="/auth/login"
                   className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Login
                 </Link>
                 <Link
-                  href="/register"
+                  href="/auth/register"
                   className="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition"
                 >
                   Sign Up

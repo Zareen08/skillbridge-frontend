@@ -55,7 +55,7 @@ export default function RegisterPage() {
         <h2 className="text-center text-3xl font-bold text-gray-900">Create your account</h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <Link href="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500">
             sign in to existing account
           </Link>
         </p>

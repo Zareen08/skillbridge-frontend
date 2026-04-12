@@ -35,7 +35,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-600 text-xl mb-4">⚠️ {error}</div>
+          <div className="text-red-600 text-xl mb-4">{error}</div>
           <p className="text-gray-600 mb-4">Please make sure the backend server is running on port 5000</p>
           <button
             onClick={() => window.location.reload()}
@@ -70,7 +70,7 @@ export default function Home() {
                 Find a Tutor
               </Link>
               <Link
-                href="/register"
+                href="auth/register"
                 className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition"
               >
                 Become a Tutor
@@ -168,7 +168,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Start Learning?</h2>
           <p className="text-indigo-100 mb-8">Join thousands of students who are achieving their goals with SkillBridge.</p>
           <Link
-            href="/register"
+            href="auth/register"
             className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block"
           >
             Get Started Today
