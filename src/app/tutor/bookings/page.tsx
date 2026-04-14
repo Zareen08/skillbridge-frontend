@@ -220,7 +220,7 @@ export default function TutorBookingsPage() {
                       </button>
                       <button
                         onClick={() => updateBookingStatus(booking.id, 'COMPLETED')}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700"
+                        className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm hover:bg-green-700"
                       >
                         Mark Complete
                       </button>

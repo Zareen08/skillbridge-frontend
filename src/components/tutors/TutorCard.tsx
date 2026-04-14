@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { StarIcon, CurrencyDollarIcon, AcademicCapIcon } from '@heroicons/react/24/solid';
+import { StarIcon, CurrencyDollarIcon } from '@heroicons/react/24/solid';
 
 interface TutorCardProps {
   tutor: {
@@ -9,9 +9,9 @@ interface TutorCardProps {
     title: string;
     bio: string;
     hourlyRate: number;
-    rating: number;
+    rating: number | null;
     totalReviews: number;
-    subjects: string[];
+    subjects: string[] | null;
     user: {
       name: string;
       avatar: string | null;
@@ -20,24 +20,35 @@ interface TutorCardProps {
 }
 
 export default function TutorCard({ tutor }: TutorCardProps) {
+  const subjects = tutor.subjects ?? [];
+  const rating = tutor.rating ?? 0;
+
+  if (!tutor.user?.name) return null;
+
   return (
     <Link href={`/tutors/${tutor.id}`}>
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="h-16 w-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold">
+            <div className="h-16 w-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
               {tutor.user.name.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <h3 className="font-semibold text-lg text-gray-900">{tutor.user.name}</h3>
-              <p className="text-sm text-gray-600">{tutor.title}</p>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-lg text-gray-900 truncate">
+                {tutor.user.name}
+              </h3>
+              <p className="text-sm text-gray-600 truncate">
+                {tutor.title || 'Tutor'}
+              </p>
             </div>
           </div>
-          
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2">{tutor.bio}</p>
-          
-          <div className="flex flex-wrap gap-2 mb-4">
-            {tutor.subjects.slice(0, 3).map((subject, index) => (
+
+          <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+            {tutor.bio || 'No bio available.'}
+          </p>
+
+          <div className="flex flex-wrap gap-2 mb-4 min-h-[28px]">
+            {subjects.slice(0, 3).map((subject, index) => (
               <span
                 key={index}
                 className="px-2 py-1 bg-indigo-100 text-indigo-600 text-xs rounded-full"
@@ -45,22 +56,31 @@ export default function TutorCard({ tutor }: TutorCardProps) {
                 {subject}
               </span>
             ))}
-            {tutor.subjects.length > 3 && (
+            {subjects.length > 3 && (
               <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                +{tutor.subjects.length - 3} more
+                +{subjects.length - 3} more
               </span>
             )}
+            {subjects.length === 0 && (
+              <span className="text-xs text-gray-400">No subjects listed</span>
+            )}
           </div>
-          
+
           <div className="flex justify-between items-center pt-4 border-t">
             <div className="flex items-center gap-1">
               <StarIcon className="h-5 w-5 text-yellow-400" />
-              <span className="font-semibold text-gray-900">{tutor.rating.toFixed(1)}</span>
-              <span className="text-sm text-gray-500">({tutor.totalReviews} reviews)</span>
+              <span className="font-semibold text-gray-900">
+                {rating.toFixed(1)}
+              </span>
+              <span className="text-sm text-gray-500">
+                ({tutor.totalReviews ?? 0})
+              </span>
             </div>
             <div className="flex items-center gap-1">
               <CurrencyDollarIcon className="h-5 w-5 text-green-500" />
-              <span className="font-semibold text-gray-900">{tutor.hourlyRate}</span>
+              <span className="font-semibold text-gray-900">
+                {tutor.hourlyRate ?? 0}
+              </span>
               <span className="text-sm text-gray-500">/hr</span>
             </div>
           </div>
