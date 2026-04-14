@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MagnifyingGlassIcon, AcademicCapIcon, UserGroupIcon, ClockIcon } from '@heroicons/react/24/outline';
 import api from '../lib/axios';
 import TutorCard from '../components/tutors/TutorCard';
+import HeroSlider from '../components/home/HeroSlider';
 import toast from 'react-hot-toast';
 
 interface FeaturedTutor {
@@ -58,32 +59,11 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Connect with Expert Tutors
-              <br />
-              Learn Anything, Anytime
-            </h1>
-            <p className="text-xl mb-8 text-indigo-100 max-w-2xl mx-auto">
-              Find the perfect tutor for your learning journey. Book sessions instantly and start learning today.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Link href="/tutors" className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                Find a Tutor
-              </Link>
-              <Link href="/auth/register" className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
-                Become a Tutor
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Hero Slider Component */}
+      <HeroSlider />
 
-      {/* Search */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16">
+      {/* Search Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
         <div className="bg-white rounded-lg shadow-xl p-6">
           <div className="flex flex-col md:flex-row gap-4">
             <input
@@ -129,8 +109,8 @@ export default function Home() {
               { icon: UserGroupIcon, title: 'Personalized Learning', desc: 'Get one-on-one attention and customized lesson plans.' },
               { icon: ClockIcon, title: 'Flexible Scheduling', desc: 'Book sessions at times that work best for you.' },
             ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="text-center p-6">
-                <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <div key={title} className="text-center p-6 hover:shadow-lg transition-shadow duration-300 rounded-lg bg-white">
+                <div className="bg-indigo-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <Icon className="h-8 w-8 text-indigo-600" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{title}</h3>
@@ -181,12 +161,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="bg-indigo-600 py-16">
+      {/* CTA Section */}
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Start Learning?</h2>
           <p className="text-indigo-100 mb-8">Join thousands of students achieving their goals with SkillBridge.</p>
-          <Link href="/auth/register" className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block">
+          <Link href="/auth/register" className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block transform hover:scale-105 duration-200">
             Get Started Today
           </Link>
         </div>
