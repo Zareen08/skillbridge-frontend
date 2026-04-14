@@ -7,7 +7,12 @@ import api from '../../../lib/axios';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { CalendarIcon, ClockIcon, CurrencyDollarIcon, AcademicCapIcon, BriefcaseIcon } from '@heroicons/react/24/outline';
+import { 
+  CalendarIcon, 
+  ClockIcon, 
+  AcademicCapIcon, 
+  BriefcaseIcon 
+} from '@heroicons/react/24/outline';
 
 interface Tutor {
   id: string;
@@ -70,11 +75,13 @@ export default function TutorDetailsPage() {
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!user) {
       toast.error('Please login to book a session');
-      router.push('/login');
+      router.push('/auth/login');  
       return;
     }
+    
     if (user.role !== 'STUDENT') {
       toast.error('Only students can book sessions');
       return;
@@ -220,29 +227,59 @@ export default function TutorDetailsPage() {
               <p className="text-gray-500">per hour</p>
             </div>
             
-            <button
-              onClick={() => setShowBookingModal(true)}
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
-            >
-              Book a Session
-            </button>
+            {!user ? (
+              <div className="text-center">
+                <p className="text-gray-600 mb-3">Login to book a session</p>
+                <Link
+                  href="/auth/login"
+                  className="block w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition text-center"
+                >
+                  Login to Book
+                </Link>
+                <p className="text-xs text-gray-500 mt-3">
+                  New student?{' '}
+                  <Link href="/auth/register" className="text-indigo-600 hover:text-indigo-800">
+                    Sign up
+                  </Link>
+                </p>
+              </div>
+            ) : user.role !== 'STUDENT' ? (
+              <div className="text-center">
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-sm text-yellow-800">
+                    {user.role === 'TUTOR' 
+                      ? 'Tutors cannot book sessions. Please switch to a student account.' 
+                      : 'Only students can book sessions.'}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowBookingModal(true)}
+                  className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
+                >
+                  Book a Session
+                </button>
 
-            <div className="mt-4 pt-4 border-t">
-              <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                <ClockIcon className="h-4 w-4" />
-                <span>Flexible scheduling</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <CalendarIcon className="h-4 w-4" />
-                <span>Online sessions</span>
-              </div>
-            </div>
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                    <ClockIcon className="h-4 w-4" />
+                    <span>Flexible scheduling</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <CalendarIcon className="h-4 w-4" />
+                    <span>Online sessions</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
 
       {/* Booking Modal */}
-      {showBookingModal && (
+      {showBookingModal && user && user.role === 'STUDENT' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6 border-b">
@@ -268,10 +305,10 @@ export default function TutorDetailsPage() {
                   onChange={(e) => setBookingDuration(Number(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value={30}>30 minutes (${tutor.hourlyRate / 2})</option>
-                  <option value={60}>60 minutes (${tutor.hourlyRate})</option>
-                  <option value={90}>90 minutes (${tutor.hourlyRate * 1.5})</option>
-                  <option value={120}>120 minutes (${tutor.hourlyRate * 2})</option>
+                  <option value={30}>30 minutes (${(tutor.hourlyRate / 2).toFixed(2)})</option>
+                  <option value={60}>60 minutes (${tutor.hourlyRate.toFixed(2)})</option>
+                  <option value={90}>90 minutes (${(tutor.hourlyRate * 1.5).toFixed(2)})</option>
+                  <option value={120}>120 minutes (${(tutor.hourlyRate * 2).toFixed(2)})</option>
                 </select>
               </div>
               <div>
@@ -297,7 +334,7 @@ export default function TutorDetailsPage() {
                   disabled={submitting}
                   className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
                 >
-                  {submitting ? 'Booking...' : `Book - $${tutor.hourlyRate * (bookingDuration / 60)}`}
+                  {submitting ? 'Booking...' : `Book - $${(tutor.hourlyRate * (bookingDuration / 60)).toFixed(2)}`}
                 </button>
               </div>
             </form>
