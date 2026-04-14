@@ -4,7 +4,15 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import api from '../../../lib/axios';
-import { CalendarIcon, BookOpenIcon, StarIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { 
+  CalendarIcon, 
+  BookOpenIcon, 
+  StarIcon, 
+  CurrencyDollarIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon
+} from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
@@ -62,13 +70,12 @@ export default function StudentDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [bookingsRes, statsRes] = await Promise.all([
-        api.get('/bookings'),
-        api.get('/users/stats')
-      ]);
+      const dashboardRes = await api.get('/users/dashboard');
+      const dashboardData = dashboardRes.data.data;
       
-      setBookings(bookingsRes.data.data || []);
-      setStats(statsRes.data.data);
+      setStats(dashboardData.stats);
+      setBookings(dashboardData.bookings?.all || []);
+      
     } catch (error: any) {
       console.error('Error fetching dashboard:', error);
       toast.error('Failed to load dashboard');
@@ -101,52 +108,44 @@ export default function StudentDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="bg-indigo-100 rounded-full p-3">
-              <BookOpenIcon className="h-6 w-6 text-indigo-600" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm">Total Sessions</p>
+              <p className="text-3xl font-bold">{stats?.totalBookings || 0}</p>
             </div>
-            <div className="ml-4">
-              <p className="text-sm text-gray-500">Total Sessions</p>
-              <p className="text-2xl font-bold text-gray-900">{stats?.totalBookings || 0}</p>
-            </div>
+            <BookOpenIcon className="h-8 w-8 text-blue-200" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="bg-green-100 rounded-full p-3">
-              <CalendarIcon className="h-6 w-6 text-green-600" />
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm">Completed</p>
+              <p className="text-3xl font-bold">{stats?.completedBookings || 0}</p>
             </div>
-            <div className="ml-4">
-              <p className="text-sm text-gray-500">Completed</p>
-              <p className="text-2xl font-bold text-gray-900">{stats?.completedBookings || 0}</p>
-            </div>
+            <CheckCircleIcon className="h-8 w-8 text-green-200" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="bg-yellow-100 rounded-full p-3">
-              <CurrencyDollarIcon className="h-6 w-6 text-yellow-600" />
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-100 text-sm">Total Spent</p>
+              <p className="text-3xl font-bold">${stats?.totalSpent || 0}</p>
             </div>
-            <div className="ml-4">
-              <p className="text-sm text-gray-500">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-900">${stats?.totalSpent || 0}</p>
-            </div>
+            <CurrencyDollarIcon className="h-8 w-8 text-purple-200" />
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="bg-purple-100 rounded-full p-3">
-              <StarIcon className="h-6 w-6 text-purple-600" />
+        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-yellow-100 text-sm">Avg Rating</p>
+              <p className="text-3xl font-bold">{stats?.averageRating?.toFixed(1) || 0}</p>
             </div>
-            <div className="ml-4">
-              <p className="text-sm text-gray-500">Avg Rating</p>
-              <p className="text-2xl font-bold text-gray-900">{stats?.averageRating?.toFixed(1) || 0}</p>
-            </div>
+            <StarIcon className="h-8 w-8 text-yellow-200" />
           </div>
         </div>
       </div>
@@ -155,25 +154,50 @@ export default function StudentDashboard() {
         {/* Upcoming Sessions */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-semibold">Upcoming Sessions</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900">Upcoming Sessions</h2>
+              <Link href="/student/bookings" className="text-indigo-600 text-sm hover:text-indigo-800">
+                View all →
+              </Link>
+            </div>
           </div>
           <div className="p-6">
             {upcomingBookings.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                No upcoming sessions. <Link href="/tutors" className="text-indigo-600">Find a tutor</Link>
-              </p>
+              <div className="text-center py-8">
+                <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-500">No upcoming sessions</p>
+                <Link href="/tutors" className="mt-3 inline-block text-indigo-600 hover:text-indigo-800">
+                  Find a tutor →
+                </Link>
+              </div>
             ) : (
               <div className="space-y-4">
                 {upcomingBookings.map((booking) => (
                   <div key={booking.id} className="border rounded-lg p-4 hover:shadow-md transition">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-semibold">{booking.tutor.name}</p>
-                        <p className="text-sm text-gray-600">{booking.tutor.tutorProfile?.title}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          {new Date(booking.date).toLocaleDateString()} at {new Date(booking.date).toLocaleTimeString()}
-                        </p>
-                        <p className="text-sm text-gray-500">Duration: {booking.duration} minutes</p>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                            <span className="text-indigo-600 font-medium text-sm">
+                              {booking.tutor.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{booking.tutor.name}</p>
+                            <p className="text-xs text-gray-500">{booking.tutor.tutorProfile?.title}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
+                          <span className="flex items-center gap-1">
+                            <CalendarIcon className="h-4 w-4" />
+                            {new Date(booking.date).toLocaleDateString()}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <ClockIcon className="h-4 w-4" />
+                            {new Date(booking.date).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">Duration: {booking.duration} minutes</p>
                       </div>
                       <div className="text-right">
                         <span className="inline-block px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">
@@ -192,19 +216,34 @@ export default function StudentDashboard() {
         {/* Past Sessions */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-semibold">Past Sessions</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900">Past Sessions</h2>
+              <Link href="/student/bookings" className="text-indigo-600 text-sm hover:text-indigo-800">
+                View all →
+              </Link>
+            </div>
           </div>
           <div className="p-6">
             {pastBookings.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">No past sessions yet.</p>
+              <div className="text-center py-8">
+                <BookOpenIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-500">No past sessions yet</p>
+              </div>
             ) : (
               <div className="space-y-4">
-                {pastBookings.map((booking) => (
+                {pastBookings.slice(0, 5).map((booking) => (
                   <div key={booking.id} className="border rounded-lg p-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-semibold">{booking.tutor.name}</p>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                            <span className="text-gray-600 font-medium text-sm">
+                              {booking.tutor.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <p className="font-semibold text-gray-900">{booking.tutor.name}</p>
+                        </div>
+                        <p className="text-sm text-gray-500">
                           {new Date(booking.date).toLocaleDateString()}
                         </p>
                       </div>
@@ -214,20 +253,25 @@ export default function StudentDashboard() {
                             ? 'text-green-800 bg-green-100' 
                             : 'text-red-800 bg-red-100'
                         }`}>
-                          {booking.status}
+                          {booking.status === 'COMPLETED' ? (
+                            <span className="flex items-center gap-1">
+                              <CheckCircleIcon className="h-3 w-3" />
+                              Completed
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1">
+                              <XCircleIcon className="h-3 w-3" />
+                              Cancelled
+                            </span>
+                          )}
                         </span>
                         {booking.status === 'COMPLETED' && !booking.isReviewed && !booking.review && (
                           <Link
-                            href={`/bookings/${booking.id}/review`}
+                            href={`/student/review/${booking.id}`}
                             className="mt-2 block text-sm text-indigo-600 hover:text-indigo-800"
                           >
                             Leave Review
                           </Link>
-                        )}
-                        {booking.status === 'COMPLETED' && (booking.isReviewed || booking.review) && (
-                          <span className="mt-2 block text-sm text-green-600">
-                            ✓ Reviewed
-                          </span>
                         )}
                       </div>
                     </div>
@@ -237,6 +281,34 @@ export default function StudentDashboard() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Link
+          href="/tutors"
+          className="bg-indigo-50 hover:bg-indigo-100 rounded-lg p-4 text-center transition"
+        >
+          <BookOpenIcon className="h-6 w-6 text-indigo-600 mx-auto mb-2" />
+          <p className="font-medium text-indigo-600">Find a Tutor</p>
+          <p className="text-sm text-gray-500">Book a new session</p>
+        </Link>
+        <Link
+          href="/student/profile"
+          className="bg-purple-50 hover:bg-purple-100 rounded-lg p-4 text-center transition"
+        >
+          <StarIcon className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+          <p className="font-medium text-purple-600">My Profile</p>
+          <p className="text-sm text-gray-500">Update your information</p>
+        </Link>
+        <Link
+          href="/student/bookings"
+          className="bg-green-50 hover:bg-green-100 rounded-lg p-4 text-center transition"
+        >
+          <CalendarIcon className="h-6 w-6 text-green-600 mx-auto mb-2" />
+          <p className="font-medium text-green-600">All Bookings</p>
+          <p className="text-sm text-gray-500">View session history</p>
+        </Link>
       </div>
     </div>
   );
