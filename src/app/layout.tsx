@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '../context/AuthContext';
+import { ThemeProvider } from '../components/providers/ThemeProvider';
 import { Toaster } from 'react-hot-toast';
 import Navbar from '../components/layout/Navbar';
 
@@ -20,11 +21,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
-        <AuthProvider>
-          <Navbar />
-          <main className="min-h-screen bg-gray-50">{children}</main>
-          <Toaster position="top-right" />
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Navbar />
+            <main className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+              {children}
+            </main>
+            <Toaster position="top-right" />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
 import { usePathname, useRouter } from 'next/navigation';
+import ThemeToggle from '../common/ThemeToggle';
 
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -47,6 +48,7 @@ export default function Navbar() {
   const navigation = [
     { name: 'Home', href: '/' },
     { name: 'Find Tutors', href: '/tutors' },
+    // { name: 'About', href: '/about' },
   ];
 
   if (!mounted) {
@@ -85,6 +87,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* <ThemeToggle /> */}
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
